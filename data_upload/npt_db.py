@@ -3,7 +3,7 @@ from boto3.dynamodb.conditions import Key, Attr
 
 from db_base import BaseDynamoDB
 
-class VCDDB(BaseDynamoDB):
+class NPTDB(BaseDynamoDB):
     
     def __init__(self, table_name, region_name):
         BaseDynamoDB.__init__(self, table_name, region_name)
@@ -49,21 +49,21 @@ class VCDDB(BaseDynamoDB):
             TableName = self.table_name,
             KeySchema=[
                 {
-                    'AttributeName': 'Show Name',
+                    'AttributeName': 'Network',
                     'KeyType': 'HASH'  # Partition key
                 },
                 {
-                    'AttributeName': 'Video Title',
+                    'AttributeName': 'DESCRIPTION',
                     'KeyType': 'RANGE'  # Sort key
                 }
             ],
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'Show Name',
+                    'AttributeName': 'Network',
                     'AttributeType': 'S'  # String
                 },
                 {
-                    'AttributeName': 'Video Title',
+                    'AttributeName': 'DESCRIPTION',
                     'AttributeType': 'S'  # String
                 }
             ],

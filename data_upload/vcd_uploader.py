@@ -1,6 +1,7 @@
 import csv
+from vcd_db import VCDDB
 
-def upload_vcd(input_file = "vcd.csv"):
+def upload_vcd(db, input_file = "vcd.csv"):
     with open(input_file, newline='') as csv_file:
         csv_reader = csv.reader(csv_file)
         header = next(csv_reader)
@@ -8,8 +9,12 @@ def upload_vcd(input_file = "vcd.csv"):
         num_cols = len(header)
         for row in csv_reader:
             item = {}
-            for i in range(0, num_cols)
-            # print(row)
-            # break
+            for i in range(0, num_cols):
+                if row[i] is '':
+                    row[i] = 'n/a'
+                item[header[i]] = row[i]
+            db.add(item)
+            print(item)
 
-upload_vcd()
+db = VCDDB("vcd_data", "us-east-1")
+upload_vcd(db)

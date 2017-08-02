@@ -1,21 +1,17 @@
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
-from dynamodb_utils.base_dynamodb import BaseDynamoDB
-
-"""
-    Cols: project_id (Project Id), approval_date (Approval Date), show_name (Show Name),
-          source (Source), video_title (Video Title), length (Length), status (Status),
-          watch (Watch), sunset_date (Sunset Date), music (Music), music_info (Music Info),
-          promo_code (Promo Code), notes (Notes), pr (PR), on_air_date (On-Air Date),
-          digital_date (Digital Date), digital_platform (Digital Platform), social (Social),
-          off_air (Off Air)
-"""
+from db_base import BaseDynamoDB
 
 class VCDDB(BaseDynamoDB):
     
     def __init__(self, table_name, region_name):
         BaseDynamoDB.__init__(self, table_name, region_name)
+        try:
+            self.create_table()
+        except:
+            print ("Table exists. Connecting to table")
+            self.table = self.dynamodb.Table(table_name)
 
     # def get_person(self, person_name):
     #     """Queries the table for all entries for a person.
@@ -53,21 +49,21 @@ class VCDDB(BaseDynamoDB):
             TableName = self.table_name,
             KeySchema=[
                 {
-                    'AttributeName': 'show_name',
+                    'AttributeName': 'Show Name',
                     'KeyType': 'HASH'  # Partition key
                 },
                 {
-                    'AttributeName': 'video_title',
+                    'AttributeName': 'Video Title',
                     'KeyType': 'RANGE'  # Sort key
                 }
             ],
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'show_name',
+                    'AttributeName': 'Show Name',
                     'AttributeType': 'S'  # String
                 },
                 {
-                    'AttributeName': 'video_title',
+                    'AttributeName': 'Video Title',
                     'AttributeType': 'S'  # String
                 }
             ],
