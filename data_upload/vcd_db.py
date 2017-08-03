@@ -13,6 +13,15 @@ class VCDDB(BaseDynamoDB):
             print ("Table exists. Connecting to table")
             self.table = self.dynamodb.Table(table_name)
 
+    def get_promo_by_name(self, promo_name):
+        """ Queries the table for a promo name by video_title """
+        response = self.table.scan()
+        data = response["Items"]
+        # return data
+        search_results = filter(lambda item: item['Video Title'].lower() == promo_name.lower(), data)
+        return list(search_results)
+
+
     # def get_person(self, person_name):
     #     """Queries the table for all entries for a person.
     #     Returns a scan/query response dict.

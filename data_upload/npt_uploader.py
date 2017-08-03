@@ -3,13 +3,14 @@ import openpyxl
 from npt_db import NPTDB
 
 def upload_npt(db, input_file = "npt.xlsx"):
-    workbook = openpyxl.load_workbook(input_file, use_iterators=True)
+    workbook = openpyxl.load_workbook(input_file)
     sheet_names = workbook.get_sheet_names()
     for sheet_name in sheet_names:
         worksheet = workbook.get_sheet_by_name(sheet_name)
         header = get_header(worksheet)
         row_count = worksheet.max_row
         column_count = worksheet.max_column
+        print("Uploading NPT data for " + sheet_name)
         for row in range(11, row_count):
             item = {}
             for col in range(1, column_count):
@@ -18,7 +19,6 @@ def upload_npt(db, input_file = "npt.xlsx"):
                     val = str(val)
                 item[header[col-1]] = val
             # print(item)
-            # break
             db.add(item)
 
 def get_header(worksheet):

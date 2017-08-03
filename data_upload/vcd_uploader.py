@@ -17,4 +17,8 @@ def upload_vcd(db, input_file = "vcd.csv"):
             print(item)
 
 db = VCDDB("vcd_data", "us-east-1")
-upload_vcd(db)
+# upload_vcd(db)
+
+res = db.get_promo_by_name("outsider")
+print(res)
+print(len(res))
