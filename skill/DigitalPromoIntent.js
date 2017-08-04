@@ -18,13 +18,7 @@ exports.handle = function(request, callback, core) {
     let schedule = [];
     let promises = [];
     // let network = core.getNetwork(attributes);
-    speechOutput = core.getPromo(attributes);
-
-    // // if date is not mentioned, it should be considered implicitly today
-    // if ((!attributes.Date || !attributes.Date.value) && (attributes.Time && attributes.Time.value)) {
-    //     attributes.Date = {
-    //         name : "Date",
-    //         value : core.formatDate(new Date(), 'YYYY-MM-DD')
-    //     };
-    // }
+    core.getPromo(attributes).then((data, err) => {
+        speechOutput = data;
+    });
 }

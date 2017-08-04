@@ -35,6 +35,37 @@ exports.constants = {
     WHEN_WHERE: 'WHEN AND WHERE'
 };
 
+// --------------- Helpers that build all of the responses -----------------------
+
+exports.buildSpeechletResponse = function(title, output, repromptText, shouldEndSession) {
+    return {
+        outputSpeech: {
+            type: 'PlainText',
+            text: output,
+        },
+        card: {
+            type: 'Simple',
+            title: `SessionSpeechlet - ${title}`,
+            content: `SessionSpeechlet - ${output}`,
+        },
+        reprompt: {
+            outputSpeech: {
+                type: 'PlainText',
+                text: repromptText,
+            },
+        },
+        shouldEndSession,
+    };
+}
+
+exports.buildResponse = function(sessionAttributes, speechletResponse) {
+    return {
+        version: '1.0',
+        sessionAttributes,
+        response: speechletResponse,
+    };
+}
+
 exports.increaseRepromptCounter = function(session) {
 	if (session.repromptCounter) session.repromptCounter++;
 	else session.repromptCounter = 1;

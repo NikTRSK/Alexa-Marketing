@@ -5,6 +5,7 @@ def upload_vcd(db, input_file = "vcd.csv"):
     with open(input_file, newline='') as csv_file:
         csv_reader = csv.reader(csv_file)
         header = next(csv_reader)
+        header = list(map((lambda item: item.replace(" ", "_")), header))
         print(header)
         num_cols = len(header)
         for row in csv_reader:
@@ -17,8 +18,8 @@ def upload_vcd(db, input_file = "vcd.csv"):
             print(item)
 
 db = VCDDB("vcd_data", "us-east-1")
-# upload_vcd(db)
+upload_vcd(db)
 
-res = db.get_promo_by_name("outsider")
-print(res)
-print(len(res))
+# res = db.get_promo_by_name("outsider")
+# print(res)
+# print(len(res))

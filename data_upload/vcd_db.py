@@ -58,21 +58,21 @@ class VCDDB(BaseDynamoDB):
             TableName = self.table_name,
             KeySchema=[
                 {
-                    'AttributeName': 'Show Name',
+                    'AttributeName': 'Show_Name',
                     'KeyType': 'HASH'  # Partition key
                 },
                 {
-                    'AttributeName': 'Video Title',
+                    'AttributeName': 'Video_Title',
                     'KeyType': 'RANGE'  # Sort key
                 }
             ],
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'Show Name',
+                    'AttributeName': 'Show_Name',
                     'AttributeType': 'S'  # String
                 },
                 {
-                    'AttributeName': 'Video Title',
+                    'AttributeName': 'Video_Title',
                     'AttributeType': 'S'  # String
                 }
             ],

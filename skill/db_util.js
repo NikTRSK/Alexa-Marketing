@@ -7,75 +7,50 @@ AWS.config.update({
 let docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.getPromo = function(promo_name) {
-	let params = { TableName: "vcd_data" };
+	return new Promise((resolve, reject) => {
+		let params = { TableName: "vcd_data" };
 
-	console.log("Scanning VCD table for " + promo_name);
-	docClient.scan(params, onScan);
+		console.log("Scanning VCD table for " + promo_name);
+		docClient.scan(params, onScan);
 
-	function onScan(err, data) {
-		if (err) {
-			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-		} else {
-			console.log("Scan succeeded.");
-			const search_results = data.Items.filter(item => {
-				return item['Video Title'].toLowerCase() == promo_name.toLowerCase();
-			});
-			
-			return search_results;
+		function onScan(err, data) {
+			if (err) {
+				reject("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			} else {
+				console.log("Scan succeeded.");
+				const search_results = data.Items.filter(item => {
+					return item['Video_Title'].toLowerCase() == promo_name.toLowerCase();
+				});
+				
+				resolve(search_results);
+			}
 		}
-	}
+	})
 };
 
 exports.getAllAvailablePromosForShow = function(show_name) {
-	let params = {
-		TableName: "vcd_data",
-		KeyConditionExpression: 'Show Name' = show_name };
+	return new Promise((resolve, reject) => {
+		const params = {
+			TableName: "vcd_data",
+			KeyConditionExpression: "#show_name = :Show_Name",
+			ExpressionAttributeNames: {
+				"#show_name": "Show_Name"
+			},
+			ExpressionAttributeValues: {
+				":Show_Name": show_name
+			}
+		};
 
-	console.log("Scanning VCD table for " + show_name);
-	// docClient.scan(params, onScan);
+		console.log("Scanning VCD table for " + show_name);
 
-	// function onScan(err, data) {
-	// 	if (err) {
-	// 		console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-	// 	} else {
-	// 		console.log("Scan succeeded.");
-	// 		const search_results = data.Items.filter(item => {
-	// 			return item['Show Name'].toLowerCase() == show_name.toLowerCase() && item['Status'] == 'Live';
-	// 		});
-			
-	// 		return search_results;
-	// 	}
-	// }
+		docClient.query(params, function(err, data) {
+			if (err) {
+				reject ("Unable to query. Error:", JSON.stringify(err, null, 2));
+			} else {
 
-	// return null;
-
-	
-// var params = {
-//     TableName : "Movies",
-//     ProjectionExpression:"#yr, title, info.genres, info.actors[0]",
-//     KeyConditionExpression: "#yr = :yyyy and title between :letter1 and :letter2",
-//     ExpressionAttributeNames:{
-//         "#yr": "year"
-//     },
-//     ExpressionAttributeValues: {
-//         ":yyyy":1992,
-//         ":letter1": "A",
-//         ":letter2": "L"
-//     }
-// };
-
-docClient.query(params, function(err, data) {
-    if (err) {
-        console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
-    } else {
-
-		console.log("Query succeeded.");
-		console.log(data.Items);
-        // data.Items.forEach(function(item) {
-        //     console.log(" -", item.year + ": " + item.title
-        //     + " ... " + item.info.genres
-        //     + " ... " + item.info.actors[0]);
-        // });
-    }
-});
+				console.log("Query succeeded.");
+				resolve (data.Items);
+			}
+		});
+	})
 };

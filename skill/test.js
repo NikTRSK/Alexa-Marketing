@@ -1,5 +1,11 @@
 let db = require('./db_util.js')
 
-// db.getPromo("outsider")
-db.getAllAvailablePromosForShow("American Ninja Warrior S9")
-// console.log(res);
+console.log("Testing getPromo")
+db.getPromo("outsider").then((res, err) => {
+    console.log(res);
+})
+
+// console.log("Testing getAllAvailablePromosForShow");
+// db.getAllAvailablePromosForShow("Midnight Texas S1").then((res, err) => {
+//     console.log(res);
+// });
