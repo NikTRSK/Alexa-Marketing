@@ -4,8 +4,16 @@
 'use strict';
 
 const Alexa = require('alexa-sdk');
-const core = require('core');
+// const core = require('core');
 // var Data = require("./data.json");
+const db = require('./db_util');
+// const constants = require('./constants');
+
+const constants = {
+	WHEN: 'WHEN',
+    WHERE: 'WHERE',
+    WHEN_WHERE: 'WHEN AND WHERE'
+};
 
 const APP_ID = 'amzn1.ask.skill.6f8733a5-057c-42fd-958e-e8743d0db4d2'; // TODO replace with your app ID (OPTIONAL).
 
@@ -14,8 +22,57 @@ const skillName = "Digital Promo Skill";
 var handlers = {
     "DigitalPromoIntent": function() {
         var speechOutput = "";
-        speechOutput = "Testing out Digital Promo Skill"
-        this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+
+        // let returnedContent = {
+        //     text: "Sorry, something went wrong. Try again later.",
+        //     shouldEndSession: true
+        // };
+
+        const time_direction = this.event.request.intent.slots.TimeDirection;
+        const video_title = this.event.request.intent.slots.PromoName;
+        
+        // let speechOutput = null;
+        if (time_direction && video_title && time_direction.value && video_title.value) {
+            console.log("In if statement");
+            db.getPromo(video_title.value).then((promo) => {
+                console.log("in promise");
+                if (promo.length == 0) return null;
+                const air_date = promo[0]['On-Air_Date'];
+                const digital_paltform = promo[0]['Digital_Platform'];
+                console.log(constants.WHEN);
+                console.log(promo);
+                console.log(air_date);
+                console.log(digital_paltform);
+                if (time_direction.value.toLowerCase() == constants.WHEN.toLowerCase()) {
+                    speechOutput = video_title.value + " aired on " + air_date;
+                } else if (time_direction.value.toLowerCase() == constants.WHERE.toLowerCase()) {
+                    if (digital_paltform == 'n/a')
+                        speechOutput = "There is no platform information for " + video_title;
+                    else
+                        speechOutput = video_title + "aired on " + digital_paltform;
+                } else if (time_direction.value.toLowerCase() == constants.WHEN_WHERE.toLowerCase()) {
+                    if (digital_paltform == 'n/a')
+                        speechOutput = "There is no platform information for " + video_title;
+                    
+                    speechOutput = video_title + " aired on " + digital_paltform + " on " + air_date;
+                }
+                this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+            })
+            .catch(err => {
+                if (err) {
+                    console.log("In error handlier")
+                    console.log(err);
+                    speechOutput = "Error with promise";
+                    this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+                }
+            });
+        } else {
+            speechOutput = "Something went wrong.";
+            this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+        }
+
+        // speechOutput = "Testing out Digital Promo Skill"
+        // this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
     },
     // "RedCarpetIntent": function() {
     //     var speechOutput = "";

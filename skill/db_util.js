@@ -11,6 +11,7 @@ exports.getPromo = function(promo_name) {
 		let params = { TableName: "vcd_data" };
 
 		console.log("Scanning VCD table for " + promo_name);
+		console.log(promo_name);
 		docClient.scan(params, onScan);
 
 		function onScan(err, data) {
