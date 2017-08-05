@@ -30,8 +30,9 @@ var handlers = {
 
         const time_direction = this.event.request.intent.slots.TimeDirection;
         const video_title = this.event.request.intent.slots.PromoName;
+        const show_name = this.event.request.intent.slots.ShowName;
         
-        // let speechOutput = null;
+        // Handle First 3 utterances (TimeDirection)
         if (time_direction && video_title && time_direction.value && video_title.value) {
             console.log("In if statement");
             db.getPromo(video_title.value).then((promo) => {
@@ -60,48 +61,35 @@ var handlers = {
             })
             .catch(err => {
                 if (err) {
-                    console.log("In error handlier")
                     console.log(err);
                     speechOutput = "Error with promise";
                     this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
                 }
             });
-        } else {
+        }
+        else if(video_title && promo && video_title.value && promo.value) {
+            
+        }
+        else if (show_name) {
+            db.getAllAvailablePromoTitlesForShow(show_name.value)
+            .then(promo_titles => {
+                speechOutput = "The available promos for " + show_name.value + " are " + promo_titles.join(', ');
+                this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+            })
+            .catch(err => {
+                console.error(err);
+                speechOutput = "Something went wrong."
+                this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+            });
+        }
+        else {
             speechOutput = "Something went wrong.";
             this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
         }
-
-        // speechOutput = "Testing out Digital Promo Skill"
-        // this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
     },
-    // "RedCarpetIntent": function() {
-    //     var speechOutput = "";
-    //     // Get the slot value
-    //     var slot_type = this.event.request.intent.slots.Events;
-    //     var person_slot = this.event.request.intent.slots.Person;
-    //     if (!slot_type)
-    //         speechOutput = "I don't have anything interesting to share regarding what you've asked.";
-    //     else {
-    //         var eventName = this.event.request.intent.slots.Events.value.toLowerCase();
-    //         var eventData = Data[eventName];
-    //         if (eventData) {
-    //             var outfit = eventData.find((item) => {
-    //                 return item.title.toLowerCase() == person_slot.value.toLowerCase();
-    //             });
-    //             if (outfit)
-    //                 speechOutput += "At the " + eventName + ", " + eventData.title +
-    //                 " wore " + eventData.description;
-    //             else
-    //                 speechOutput = person_slot.value + " didn't attend " + eventName;
-    //         } else {
-    //             speechOutput = "I don't have anything interesting to share regarding what you've asked."
-    //         }
-    //     }
-    //     this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
-    // },
 
     "AboutIntent": function() {
-        var speechOutput = "The Polyglot Developer, Nic Raboy, is from San Francisco, California";
+        var speechOutput = "The Promo Skill is a property of NBC Universal and shouldn't be redistributed";
         this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
     },
 

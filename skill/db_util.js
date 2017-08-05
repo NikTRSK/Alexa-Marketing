@@ -48,10 +48,47 @@ exports.getAllAvailablePromosForShow = function(show_name) {
 			if (err) {
 				reject ("Unable to query. Error:", JSON.stringify(err, null, 2));
 			} else {
-
 				console.log("Query succeeded.");
-				resolve (data.Items);
+				const live_promos = data.Items.filter(item => {
+					return item.Status = 'Live'
+				});
+				// console.log(live_promos);
+				resolve (live_promos);
 			}
 		});
 	})
 };
+
+exports.getAllAvailablePromoTitlesForShow = function(show_name) {
+	return new Promise((resolve, reject) => {
+		this.getAllAvailablePromosForShow(show_name)
+		.then(promos => {
+			const promo_titles = promos.map(item => {
+				return item.Video_Title;
+			});
+			resolve(promo_titles);
+		})
+		.catch(err => {
+			reject(err);
+		})
+	})
+}
+
+exports.checkIfPromoIsAvailableToRun = function(show_name, promo_title) {
+	return new Promise((resolve, reject) => {
+		this.getAllAvailablePromosForShow(show_name)
+		.then(promos => {
+			console.log(promos);
+			// let i;
+			for (let i in promos) {
+				console.log(promos[i]);
+				if (promos[i].Video_Title.toLowerCase() == promo_title.toLowerCase())
+					resolve(true);
+			}
+			resolve(false);
+		})
+		.catch(err => {
+			reject(err);
+		});
+	});
+}
