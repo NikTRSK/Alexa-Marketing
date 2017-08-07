@@ -5,10 +5,8 @@
   "license": "ISC",
   "dependencies": {
     "alexa-sdk": "^1.0.10",
-    "chai": "^3.5.0",
-    "chai-http": "^2.0.1",
-    "mocha": "^3.4.2",
-    "type": "0.0.3"
+    "json2xls": "^0.1.2",
+    "nodemailer": "^4.0.1"
   },
   "scripts": {
     "test": "mocha"

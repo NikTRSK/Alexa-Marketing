@@ -1,0 +1,151 @@
+{
+  "intents": [
+    {
+      "name": "AMAZON.CancelIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": []
+    },
+    {
+      "name": "DigitalPromoIntent",
+      "samples": [
+        "{TimeDirection} did {PromoName} run",
+        "What {ShowName} promos are available to run right now",
+        "Is the {PromoName} for {ShowName} available to run now",
+        "What promos aired for {ShowName} from {StartDate} to {EndDate}",
+        "Show me all the {Length} second promos available to run for {ShowName}",
+        "When was the last time {PromoName} promo aired",
+        "When was the last time the {PromoName} promo aired",
+        "When was the last time the {PromoName} aired",
+        "When was the last time {PromoName} aired",
+        "Give me all promo airings from {Day} for {ShowName}",
+        "What ran on air on {AirDate}"
+      ],
+      "slots": [
+        {
+          "name": "TimeDirection",
+          "type": "TimeDirection",
+          "samples": []
+        },
+        {
+          "name": "PromoName",
+          "type": "PromoName",
+          "samples": []
+        },
+        {
+          "name": "ShowName",
+          "type": "ShowName",
+          "samples": []
+        },
+        {
+          "name": "StartDate",
+          "type": "AMAZON.DATE",
+          "samples": []
+        },
+        {
+          "name": "EndDate",
+          "type": "AMAZON.DATE",
+          "samples": []
+        },
+        {
+          "name": "Length",
+          "type": "AMAZON.NUMBER",
+          "samples": []
+        },
+        {
+          "name": "AirDate",
+          "type": "AMAZON.DATE",
+          "samples": []
+        },
+        {
+          "name": "Day",
+          "type": "Day",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "OnAirPromoListingIntent",
+      "samples": [
+        "Give me all the promos that aired during {ShowName}"
+      ],
+      "slots": [
+        {
+          "name": "ShowName",
+          "type": "ShowName",
+          "samples": []
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Day",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "last night",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "PromoName",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "text",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "ShowName",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "example",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "TimeDirection",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "when",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "where",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "when and where",
+            "synonyms": []
+          }
+        }
+      ]
+    }
+  ]
+}

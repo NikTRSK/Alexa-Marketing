@@ -1,0 +1,21 @@
+"{TimeDirection} did {PromoName} run",
+"What {ShowName} promos are available to run right now",
+"Is the {PromoName} for {ShowName} available to run now",
+"What promos aired for {ShowName} from {StartDate} to {EndDate}",
+"Show me all the {Length} second promos available to run for {ShowName}"
+"When was the last time {PromoName} aired"
+"Give me all promo airings from {TimeDirection} for {ShowName}"
+"What ran on air on {AirDate}"
+"Give me all the promos that aired during {ShowName}"
+
+When did outsider run
+Where did outsider run
+When and Where did outsider run
+What American Ninja Warrior S9 are available to run right now
+Is the Emmy Nom for American Ninja Warrior S9 available to run now
+What promos aired for the wall from 6/17/2017 to 7/17/2017
+Show me all the 30 second promos available to run for World of Dance S1
+When was the last time heroes aired
+Give me all promo airings from last night for Spartan S2
+What ran on air on 6/17/2017
+Give me all the promos that aired during the french open
