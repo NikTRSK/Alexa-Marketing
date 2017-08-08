@@ -84,13 +84,21 @@ let db = require('./db_util.js')
 //         console.log(err);
 //     });
 
-db.getLastAired("heroes")
-    .then(air_date => {
-        console.log(air_date);
-        speechOutput = (air_date != 'n/a') ? (video_title.value + " last time aired on " + air_date) : ("There isn't any air information for " + video_title.value);
-        this.emit(':tell', speechOutput);
-    })
-    .catch(err => {
-        speechOutput = "Something went wrong."
-        this.emit(':tell', speechOutput);
-    });
+// db.getLastAired("heroes")
+//     .then(air_date => {
+//         console.log(air_date);
+//         speechOutput = (air_date != 'n/a') ? (video_title.value + " last time aired on " + air_date) : ("There isn't any air information for " + video_title.value);
+//         this.emit(':tell', speechOutput);
+//     })
+//     .catch(err => {
+//         speechOutput = "Something went wrong."
+//         this.emit(':tell', speechOutput);
+//     });
+
+db.checkIfPromoIsAvailableToRun("American ninja warrior", "Emmy nom")
+.then(data => {
+    console.log(data);
+})
+.catch(err => {
+console.log(err);
+});

@@ -8,14 +8,18 @@
 "What ran on air on {AirDate}"
 "Give me all the promos that aired during {ShowName}"
 
+"Alexa open Promo Guide"
+
 When did outsider run
 Where did outsider run
 When and Where did outsider run
 What American Ninja Warrior promos are available to run right now
-Is the Emmy Nom for American Ninja Warrior S9 available to run now
+Is the Emmy Nom for American Ninja Warrior available to run now
 What promos aired for the wall from 6/17/2017 to 7/17/2017
-Show me all the 30 second promos available to run for World of Dance
 When was the last time heroes aired
-Give me all promo airings from last night for Spartan
 What ran on air on 6/17/2017
+Give me all promo airings from last night for Spartan
 Give me all the promos that aired during the french open
+
+Show me all the 30 second promos available to run for World of Dance
+Show me the length of promos for Midnight Texas

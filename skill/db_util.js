@@ -138,6 +138,40 @@ exports.getAllPromosOfLength = function(show_name, length) {
     })
 };
 
+exports.getLengthOfPromosForShow = function(show_name) {
+    return new Promise((resolve, reject) => {
+        console.log("Scanning table for " + show_name);
+        let params = { TableName: "promo_db" };
+        docClient.scan(params, onScan);
+
+        function onScan(err, data) {
+            if (err) {
+                reject("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+            } else {
+                console.log("Scan succeeded.");
+
+                let search_results = data.Items.filter(item => {
+                    return (item['SHOW_TITLE']).toLowerCase().includes(show_name.toLowerCase());
+                });
+
+                const promos = search_results.filter(item => {
+                    return item['PROMO_LENGTH'] != 'n/a' || item['PROMO_LENGTH'] != 'unknown';
+				});
+				
+				const promo_len = promos.map(item => {
+					return {
+						"PROMO_TITLE": item['PROMO_TITLE'],
+						"SHOW_TITLE": item['SHOW_TITLE'],
+						"PROMO_LENGTH": item['PROMO_LENGTH']
+					}
+				})
+
+                resolve(promo_len);
+            }
+        }
+    })
+};
+
 exports.getLastAired = function(promo_name) {
     return new Promise((resolve, reject) => {
         this.getPromo(promo_name)

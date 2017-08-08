@@ -4,32 +4,18 @@
 'use strict';
 
 const Alexa = require('alexa-sdk');
-// const core = require('core');
-// var Data = require("./data.json");
 const db = require('./db_util');
-// const constants = require('./constants');
 
 let email = require('./send_email');
 let json2xls = require('json2xls');
 
-const constants = {
-    WHEN: 'WHEN',
-    WHERE: 'WHERE',
-    WHEN_WHERE: 'WHEN AND WHERE'
-};
-
 const APP_ID = 'amzn1.ask.skill.6f8733a5-057c-42fd-958e-e8743d0db4d2'; // TODO replace with your app ID (OPTIONAL).
 
-const skillName = "Digital Promo Skill";
+const skillName = "NBC Universal's Promo Skill";
 
 var handlers = {
     "DigitalPromoIntent": function() {
         let speechOutput = "";
-
-        // let returnedContent = {
-        //     text: "Sorry, something went wrong. Try again later.",
-        //     shouldEndSession: true
-        // };
 
         const time_direction = this.event.request.intent.slots.TimeDirection;
         const video_title = this.event.request.intent.slots.PromoName;
@@ -60,70 +46,48 @@ var handlers = {
 
                         speechOutput = video_title.value + " aired on " + digital_paltform + " on " + air_date;
                     }
-                    this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+                    this.emit(':ask', speechOutput);
                 })
                 .catch(err => {
                     if (err) {
                         console.log(err);
                         speechOutput = "Error with promise";
-                        this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+                        this.emit(':ask', speechOutput);
                     }
                 });
         } else if (video_title && show_name && video_title.value && show_name.value) {
             console.log("In is available to run");
-            db.checkIfPromoIsAvailableToRun(show_name.title, video_title.title)
+            console.log(show_name.value + " | " + video_title.value);
+            db.checkIfPromoIsAvailableToRun(show_name.value, video_title.value)
                 .then(answer => {
-                    speechOutput = video_title.title + " for " + show_name.title + " is " + (answer ? "available" : "not available") + " to run."
-                    this.emit(":tellWithCard", speechOutput, skillName, speechOutput);
+                    speechOutput = video_title.value + " for " + show_name.value + " is " + (answer ? "available" : "not available") + " to run."
+                    this.emit(":ask", speechOutput);
                 })
                 .catch(err => {
                     console.error(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
         } else if (show_name && start_date && end_date && show_name.value && start_date.value && end_date.value) {
             console.log("In get date range");
             db.getPromosForDateRange(show_name.value, start_date.value, end_date.value)
                 .then(msg => {
-                    // console.log(msg);
                     let xls = json2xls(msg);
                     email.send_email("theannihilator666@gmail.com", "Report", "Report for " + show_name.value + " from " + start_date.value + " to " + end_date.value, xls)
                         .then(res => {
                             speechOutput = "Check your email for the report";
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         })
                         .catch(err => {
                             console.error(err);
                             speechOutput = "Something went wrong."
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         });
                 })
                 .catch(err => {
                     console.log(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
-                });
-        } else if (length && length.value) {
-            console.log("In get by length");
-            db.getAllPromosOfLength("World of Dance S1", 30)
-                .then(data => {
-                    console.log("Sending email for length");
-                    let xls = json2xls(data);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
-                        .then(res => {
-                            speechOutput = "Check your email for the report";
-                            this.emit(':tell', speechOutput);
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            speechOutput = "Something went wrong."
-                            this.emit(':tell', speechOutput);
-                        });
-                })
-                .catch(err => {
-                    console.log(err);
-                    speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
         } else if (time_direction && show_name && time_direction.value && show_name.value) {
             console.log("In last night airings");
@@ -141,21 +105,19 @@ var handlers = {
                                 });
 
                                 speechOutput = promo_titles.join(', ');
-                                this.emit(':tell', speechOutput);
-                                // speechOutput = "Check your email for the report";
-                                // this.emit(':tell', speechOutput);
+                                this.emit(':ask', speechOutput);
                             })
                             .catch(err => {
                                 console.error(err);
                                 speechOutput = "Something went wrong."
-                                this.emit(':tell', speechOutput);
+                                this.emit(':ask', speechOutput);
                             });
                     }
                 })
                 .catch(err => {
                     console.log(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
 
         } else if (air_date && air_date.value) {
@@ -166,18 +128,18 @@ var handlers = {
                     email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
                         .then(res => {
                             speechOutput = "Check your email for the report";
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         })
                         .catch(err => {
                             console.error(err);
                             speechOutput = "Something went wrong."
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         });
                 })
                 .catch(err => {
                     console.log(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
 
 
@@ -193,18 +155,18 @@ var handlers = {
                     email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
                         .then(res => {
                             speechOutput = "Check your email for the report";
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         })
                         .catch(err => {
                             console.error(err);
                             speechOutput = "Something went wrong."
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         });
                 })
                 .catch(err => {
                     console.error(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
         } else if (video_title && video_title.value) {
             console.log("In get last aired");
@@ -212,24 +174,19 @@ var handlers = {
                 .then(air_date => {
                     console.log(air_date);
                     speechOutput = (air_date != 'n/a') ? (video_title.value + " last time aired on " + air_date) : ("There isn't any air information for " + video_title.value);
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 })
                 .catch(err => {
                     speechOutput = "Something went wrong."
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
         } else {
             speechOutput = "Something went wrong.";
-            this.emit(':tell', speechOutput);
+            this.emit(':ask', speechOutput);
         }
     },
     "OnAirPromoListingIntent": function() {
         let speechOutput = "";
-
-        // let returnedContent = {
-        //     text: "Sorry, something went wrong. Try again later.",
-        //     shouldEndSession: true
-        // };
         const show_name = this.event.request.intent.slots.ShowName;
 
         if (show_name && show_name.value) {
@@ -239,35 +196,88 @@ var handlers = {
                     email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
                         .then(res => {
                             speechOutput = "Check your email for the report";
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         })
                         .catch(err => {
                             console.error(err);
                             speechOutput = "Something went wrong."
-                            this.emit(':tell', speechOutput);
+                            this.emit(':ask', speechOutput);
                         });
                 })
                 .catch(err => {
                     console.log(err);
                     speechOutput = "Something went wrong.";
-                    this.emit(':tell', speechOutput);
+                    this.emit(':ask', speechOutput);
                 });
         } else {
             speechOutput = "Something went wrong.";
-            this.emit(':tell', speechOutput);
+            this.emit(':ask', speechOutput);
+        }
+    },
+    "ShowLengthIntent": function() {
+        let speechOutput = "";
+
+        const show_name = this.event.request.intent.slots.ShowName;
+        const length = this.event.request.intent.slots.Length;
+
+        if (length && length.value && show_name && show_name.value) {
+            console.log("In get by length");
+            db.getAllPromosOfLength(show_name.value, length.value)
+                .then(data => {
+                    console.log("Sending email for length");
+                    let xls = json2xls(data);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':ask', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':ask', speechOutput);
+                        });
+                })
+                .catch(err => {
+                    console.log(err);
+                    speechOutput = "Something went wrong."
+                    this.emit(':ask', speechOutput);
+                });
+        } else if (show_name && show_name.value) {
+            db.getLengthOfPromosForShow(show_name.value)
+                .then(promos => {
+                    let xls = json2xls(promos);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':ask', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':ask', speechOutput);
+                        });
+                })
+                .catch(err => {
+                    console.log(err);
+                    speechOutput = "Something went wrong.";
+                    this.emit(':ask', speechOutput);
+                });
+        } else {
+            speechOutput = "Something went wrong.";
+            this.emit(':ask', speechOutput);
         }
     },
     "AboutIntent": function() {
         var speechOutput = "The Promo Skill is a property of NBC Universal and shouldn't be redistributed";
-        this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+        this.emit(':ask', speechOutput);
     },
 
     "AMAZON.HelpIntent": function() {
         var speechOutput = "";
         speechOutput += "Here are some things you can say: ";
-        speechOutput += "Tell me something interesting about Java. ";
-        speechOutput += "Tell me about the skill developer. ";
-        speechOutput += "You can also say stop if you're done. ";
+        speechOutput += "When did outsider run? ";
+        speechOutput += "What American Ninja Warrior promos are available to run right now? ";
+        speechOutput += "Give me all the promos that aired during the french open. ";
         speechOutput += "So how can I help?";
         this.emit(':ask', speechOutput, speechOutput);
     },
@@ -283,13 +293,12 @@ var handlers = {
     },
 
     'Unhandled': function() {
-        this.emit(':ask', 'Insert your own error message here');
+        this.emit(':ask', 'I can\'t find that intent');
     },
 
     "LaunchRequest": function() {
         var speechText = "";
         speechText += "Welcome to " + skillName + ".  ";
-        speechText += "You can ask a question like, tell me something interesting about Java.  ";
         var repromptText = "For instructions on what you can say, please say help me.";
         this.emit(':ask', speechText, repromptText);
     }
