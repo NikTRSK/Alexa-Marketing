@@ -16,10 +16,10 @@ console.log("Testing getPromo")
 //     console.log(err);
 // })
 
-// console.log("Testing getAllAvailablePromosForShow");
-// db.getAllAvailablePromosForShow("Midnight Texas S1").then((res, err) => {
-//     console.log(res);
-// });
+console.log("Testing getAllAvailablePromosForShow");
+db.getAllAvailablePromosForShow("Midnight Texas").then((res) => {
+    console.log(res);
+}).catch(err => {console.log(err)});
 
 // db.checkIfPromoIsAvailableToRun("American Ninja Warrior S9", "Emmy Nom")
 //     .then(data => {
@@ -78,7 +78,9 @@ let json2xls = require('json2xls');
 
 // console.log(isBetweenDates(d, s, e));
 
-// email.send_email("theannihilator666@gmail.com", "Report", "This is a test", null);
+// email.send_email("theannihilator666@gmail.com", "Report", "This is a test", null)
+// .then(res => {console.log(res)})
+// .catch(err => {console.log(err)});
 
 // db.getAllPromosOfLength("World of Dance S1", 30)
 //     .then(data => {
@@ -104,10 +106,10 @@ let json2xls = require('json2xls');
 //         console.log(err);
 //     });
 
-db.getAiringsDuringShow("FRENCH OPEN")
-    .then(promos => {
-        console.log(promos);
-    })
-    .catch(err => {
-        console.log(err);
-    });
+// db.getAiringsDuringShow("FRENCH OPEN")
+//     .then(promos => {
+//         console.log(promos);
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     });

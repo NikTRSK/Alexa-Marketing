@@ -164,17 +164,23 @@ var handlers = {
                     const promo_titles = promos.map(item => {
                         return item.Video_Title;
                     });
-
+                    
                     let xls = json2xls(promos);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls);
-
-                    speechOutput = "Check your email for the report";
-                    this.emit(':tell', speechOutput);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':tell', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':tell', speechOutput);
+                        });
                 })
                 .catch(err => {
                     console.error(err);
                     speechOutput = "Something went wrong."
-                    this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
+                    this.emit(':tell', speechOutput);
                 });
         } else if (video_title && video_title.value) {
             console.log("In get last aired");

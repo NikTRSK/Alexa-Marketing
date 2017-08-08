@@ -35,31 +35,22 @@ exports.getPromo = function(promo_name) {
 
 exports.getAllAvailablePromosForShow = function(show_name) {
     return new Promise((resolve, reject) => {
-        const params = {
-            TableName: "vcd_data",
-            KeyConditionExpression: "#show_name = :Show_Name",
-            ExpressionAttributeNames: {
-                "#show_name": "Show_Name"
-            },
-            ExpressionAttributeValues: {
-                ":Show_Name": show_name
-            }
-        };
-
-        console.log("Scanning VCD table for " + show_name);
-
-        docClient.query(params, function(err, data) {
+        let params = { TableName: "vcd_data" };
+        docClient.scan(params, onScan);
+        function onScan(err, data) {
             if (err) {
-                reject("Unable to query. Error:", JSON.stringify(err, null, 2));
+                reject("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
             } else {
-                console.log("Query succeeded.");
-                const live_promos = data.Items.filter(item => {
-                    return item.Status = 'Live'
+				console.log("Scan succeeded.");
+				const promos = data.Items.filter(item => {
+					return item.Show_Name.toLowerCase().includes(show_name.toLowerCase());
+				});
+                const live_promos = promos.filter(item => {
+                    return item.Status == 'Live';
                 });
-                // console.log(live_promos);
                 resolve(live_promos);
             }
-        });
+        }
     })
 };
 

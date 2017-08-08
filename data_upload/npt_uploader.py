@@ -1,6 +1,8 @@
 import datetime
 import openpyxl
 from npt_db import NPTDB
+from promo_db import PromoDB
+from helpers import find_and_replace_list_item_in_place
 
 def upload_npt(db, input_file = "npt.xlsx"):
     workbook = openpyxl.load_workbook(input_file)
@@ -18,13 +20,37 @@ def upload_npt(db, input_file = "npt.xlsx"):
                 if isinstance(val, datetime.datetime):
                     val = str(val)
                 item[header[col-1]] = val
-            # print(item)
-            db.add(item)
+            if item['SegmentType'] == 'PROMO':
+                item.pop('SegmentType')
+                hyperlink = item['PROMO_TITLE'].split('","')
+                promo_title = hyperlink[1][:-2]
+                hyperlink = hyperlink[0].replace('=HYPERLINK("', '')
+                item['PROMO_TITLE'] = promo_title
+                item['VIDEO_LINK'] = hyperlink
+                item['SHOW_TITLE'] = 'n/a' # n/a means the source doesn't provide the data
+                item['PROMO_ID'] = 'n/a'
+                item['CHANNEL_TIME_ZONE'] = 'n/a'
+                item['PROJECT_ID'] = 'n/a'
+                item['APPROVAL_DATE'] = 'n/a'
+                item['STATUS'] = 'n/a'
+                item['DIGITAL_AIR_DATE'] = 'n/a'
+                item['DIGITAL_PLATFORM'] = 'n/a'
+                item['SHOW_AIR_TIME'] = 'n/a'
+                item['SOURCE_DB'] = 'NPT'
+                # print(list(item.keys()))
+                db.add(item)
 
 def get_header(worksheet):
     header = []
     for i in range(1, 8):
         header.append(worksheet.cell(row=10, column=i).value)
+    
+    mappings = { 'Network': 'NETWORK', 'Date': 'AIR_DATE', 'DESCRIPTION': 'PROMO_TITLE',
+                 'DURATION': 'PROMO_LENGTH', 'StartTime': 'AIR_TIME' }
+    
+    for key, value in mappings.items():
+        find_and_replace_list_item_in_place(header, key, value)
+
     return header
 
 def get_promo_list(input_file = "npt.xlsx"):
@@ -82,3 +108,6 @@ def get_npt_show_list(input_file = "npt.xlsx"):
 # upload_npt(db)
 # promo_list = get_promo_list()
 # print(promo_list)
+
+# db = PromoDB("promo_db", "us-east-1")
+# upload_npt(None)

@@ -9,20 +9,21 @@ let transporter = nodemailer.createTransport({
 });
 
 exports.send_email = function(to, subject, msg, attachment) {
-    const mailOptions = {
-        from: 'NBCU Promo Skill <alexa.skill.mailer@gmail.com>',
-        to: to,
-        subject: subject,
-        text: msg,
-        attachments: { filename: 'report.xls', content: attachment, encoding: 'binary' }
-        // attachments: { filename: 'test.txt', content: 'testing' }
-    };
+    return new Promise((resolve, reject) => {
+        const mailOptions = {
+            from: 'NBCU Promo Skill <alexa.skill.mailer@gmail.com>',
+            to: to,
+            subject: subject,
+            text: msg,
+            attachments: { filename: 'report.xls', content: attachment, encoding: 'binary' }
+        };
 
-    transporter.sendMail(mailOptions, function(error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve('Email sent: ' + info.response);
+            }
+        });
+    })
 }
