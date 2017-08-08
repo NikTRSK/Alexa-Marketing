@@ -12,19 +12,18 @@ const isBetweenDates = function(target, start, end) {
 
 exports.getPromo = function(promo_name) {
     return new Promise((resolve, reject) => {
-        let params = { TableName: "vcd_data" };
+        let params = { TableName: "promo_data" };
 
-        console.log("Scanning VCD table for " + promo_name);
-        console.log(promo_name);
+        console.log("Scanning for " + promo_name);
+        // console.log(promo_name);
         docClient.scan(params, onScan);
-
         function onScan(err, data) {
             if (err) {
                 reject("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
             } else {
                 console.log("Scan succeeded.");
                 const search_results = data.Items.filter(item => {
-                    return item['Video_Title'].toLowerCase() == promo_name.toLowerCase();
+                    return item['VIDEO_TITLE'].toLowerCase() == promo_name.toLowerCase();
                 });
 
                 resolve(search_results);
@@ -35,7 +34,7 @@ exports.getPromo = function(promo_name) {
 
 exports.getAllAvailablePromosForShow = function(show_name) {
     return new Promise((resolve, reject) => {
-        let params = { TableName: "vcd_data" };
+        let params = { TableName: "promo_data" };
         docClient.scan(params, onScan);
         function onScan(err, data) {
             if (err) {
@@ -43,10 +42,10 @@ exports.getAllAvailablePromosForShow = function(show_name) {
             } else {
 				console.log("Scan succeeded.");
 				const promos = data.Items.filter(item => {
-					return item.Show_Name.toLowerCase().includes(show_name.toLowerCase());
+					return item['SHOW_TITLE'].toLowerCase().includes(show_name.toLowerCase());
 				});
                 const live_promos = promos.filter(item => {
-                    return item.Status == 'Live';
+                    return item['STATUS'] == 'Live';
                 });
                 resolve(live_promos);
             }
@@ -71,7 +70,7 @@ exports.checkIfPromoIsAvailableToRun = function(show_name, promo_title) {
         this.getAllAvailablePromosForShow(show_name)
             .then(promos => {
                 for (let i in promos) {
-                    if (promos[i].Video_Title.toLowerCase() == promo_title.toLowerCase())
+                    if (promos[i]['PROMO_TITLE'].toLowerCase() == promo_title.toLowerCase())
                         resolve(true);
                 }
                 resolve(false);
@@ -84,7 +83,7 @@ exports.checkIfPromoIsAvailableToRun = function(show_name, promo_title) {
 
 exports.getPromosForDateRange = function(show_name, start_data, end_date) {
     return new Promise((resolve, reject) => {
-        let params = { TableName: "npt_data" };
+        let params = { TableName: "promo_data" };
 
         console.log("Scanning NPT table for " + show_name);
         // console.log(promo_name);
@@ -96,17 +95,17 @@ exports.getPromosForDateRange = function(show_name, start_data, end_date) {
             } else {
                 console.log("Scan succeeded.");
                 let search_results = data.Items.filter(item => {
-                    return item['Network'] == 'NBC';
+                    return item['NEYWORK'] == 'NBC';
                 });
 
                 search_results = search_results.filter(item => {
-                    return (item['DESCRIPTION']).toLowerCase().includes(show_name.toLowerCase());
+                    return (item['PROMO_TITLE']).toLowerCase().includes(show_name.toLowerCase());
                 });
 
                 const start = new Date(start_data);
                 const end = new Date(end_date);
                 search_results = search_results.filter(item => {
-                    return isBetweenDates(new Date(item['Date']), start, end);
+                    return isBetweenDates(new Date(item['AIR_DATE']), start, end);
                 });
 
                 resolve(search_results);
@@ -118,13 +117,13 @@ exports.getPromosForDateRange = function(show_name, start_data, end_date) {
 exports.getAllPromosOfLength = function(show_name, length) {
     return new Promise((resolve, reject) => {
         const params = {
-            TableName: "vcd_data",
-            KeyConditionExpression: "#show_name = :Show_Name",
+            TableName: "promo_data",
+            KeyConditionExpression: "#show_name = :SHOW_TITLE",
             ExpressionAttributeNames: {
-                "#show_name": "Show_Name"
+                "#show_name": "SHOW_TITLE"
             },
             ExpressionAttributeValues: {
-                ":Show_Name": show_name
+                ":SHOW_TITLE": show_name
             }
         };
 
@@ -136,7 +135,7 @@ exports.getAllPromosOfLength = function(show_name, length) {
             } else {
                 console.log("Query succeeded.");
                 const same_length_promos = data.Items.filter(item => {
-                    return item.Length = length;
+                    return item['PROMO_LENGTH'] = length;
                 });
                 // console.log(live_promos);
                 resolve(same_length_promos);
@@ -149,7 +148,7 @@ exports.getLastAired = function(promo_name) {
     return new Promise((resolve, reject) => {
         this.getPromo(promo_name)
             .then(promo => {
-                resolve(promo['On-Air_Date']);
+                resolve(promo['AIR_DATE']);
             })
             .catch(err => {
                 reject(err);
@@ -161,13 +160,13 @@ exports.getPromosFromLastNight = function(show_name) {
     return new Promise((resolve, reject) => {
         let last_night = new Date("6/28/2017"); // Change to get yesterday's date
         const params = {
-            TableName: "vcd_data",
-            KeyConditionExpression: "#show_name = :Show_Name",
+            TableName: "promo_data",
+            KeyConditionExpression: "#show_name = :SHOW_TITLE",
             ExpressionAttributeNames: {
-                "#show_name": "Show_Name"
+                "#show_name": "SHOW_TITLE"
             },
             ExpressionAttributeValues: {
-                ":Show_Name": show_name
+                ":SHOW_TITLE": show_name
             }
         };
 
@@ -179,7 +178,7 @@ exports.getPromosFromLastNight = function(show_name) {
             } else {
                 console.log("Query succeeded.");
                 const promos = data.Items.filter(item => {
-                    return (new Date(item['On-Air_Date']).getTime() == last_night.getTime());
+                    return (new Date(item['AIR_DATE']).getTime() == last_night.getTime());
                 });
                 // console.log(live_promos);
                 resolve(promos);
@@ -191,7 +190,7 @@ exports.getPromosFromLastNight = function(show_name) {
 exports.getPromosOnDate = function(air_date) {
     air_date = new Date(air_date);
     return new Promise((resolve, reject) => {
-        let params = { TableName: "vcd_data" };
+        let params = { TableName: "promo_data" };
 
         docClient.scan(params, onScan);
 
@@ -201,8 +200,8 @@ exports.getPromosOnDate = function(air_date) {
             } else {
                 console.log("Scan succeeded.");
                 const search_results = data.Items.filter(item => {
-                    console.log(item['On-Air_Date']);
-                    return new Date(item['On-Air_Date']).getTime() == air_date.getTime();
+                    console.log(item['AIR_DATE']);
+                    return new Date(item['AIR_DATE']).getTime() == air_date.getTime();
                 });
 
                 resolve(search_results);
@@ -213,7 +212,7 @@ exports.getPromosOnDate = function(air_date) {
 
 exports.getAiringsDuringShow = function(show_name) {
     return new Promise((resolve, reject) => {
-        let params = { TableName: "syntec_data" };
+        let params = { TableName: "promo_data" };
 
         docClient.scan(params, onScan);
 
@@ -223,7 +222,7 @@ exports.getAiringsDuringShow = function(show_name) {
             } else {
                 console.log("Scan succeeded.");
                 const search_results = data.Items.filter(item => {
-                    return item['SHOW_TITILE'].toLowerCase().includes(show_name.toLowerCase());
+                    return item['SHOW_TITLE'].toLowerCase().includes(show_name.toLowerCase());
                 });
 
                 resolve(search_results);
