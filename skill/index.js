@@ -45,20 +45,20 @@ var handlers = {
             db.getPromo(video_title.value).then((promo) => {
                     console.log("In get promo");
                     if (promo.length == 0) return null;
-                    const air_date = promo[0]['On-Air_Date'];
-                    const digital_paltform = promo[0]['Digital_Platform'];
+                    const air_date = promo[0]['AIR_DATE'];
+                    const digital_paltform = promo[0]['DIGITAL_PLATFORM'];
                     if (time_direction.value.toLowerCase() == constants.WHEN.toLowerCase()) {
                         speechOutput = video_title.value + " aired on " + air_date;
                     } else if (time_direction.value.toLowerCase() == constants.WHERE.toLowerCase()) {
                         if (digital_paltform == 'n/a')
                             speechOutput = "There is no platform information for " + video_title;
                         else
-                            speechOutput = video_title + "aired on " + digital_paltform;
+                            speechOutput = video_title.value + "aired on " + digital_paltform;
                     } else if (time_direction.value.toLowerCase() == constants.WHEN_WHERE.toLowerCase()) {
                         if (digital_paltform == 'n/a')
-                            speechOutput = "There is no platform information for " + video_title;
+                            speechOutput = "There is no platform information for " + video_title.value;
 
-                        speechOutput = video_title + " aired on " + digital_paltform + " on " + air_date;
+                        speechOutput = video_title.value + " aired on " + digital_paltform + " on " + air_date;
                     }
                     this.emit(':tellWithCard', speechOutput, skillName, speechOutput);
                 })
@@ -87,10 +87,16 @@ var handlers = {
                 .then(msg => {
                     // console.log(msg);
                     let xls = json2xls(msg);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Report for " + show_name.value + " from " + start_date.value + " to " + end_date.value, xls);
-
-                    speechOutput = "Check your email for the report";
-                    this.emit(':tell', speechOutput);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Report for " + show_name.value + " from " + start_date.value + " to " + end_date.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':tell', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':tell', speechOutput);
+                        });
                 })
                 .catch(err => {
                     console.log(err);
@@ -103,10 +109,16 @@ var handlers = {
                 .then(data => {
                     console.log("Sending email for length");
                     let xls = json2xls(data);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls);
-
-                    speechOutput = "Check your email for the report";
-                    this.emit(':tell', speechOutput);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':tell', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':tell', speechOutput);
+                        });
                 })
                 .catch(err => {
                     console.log(err);
@@ -122,14 +134,22 @@ var handlers = {
                         speechOutput = "There aren't any promos that ran last night"
                     else {
                         let xls = json2xls(promos);
-                        email.send_email("theannihilator666@gmail.com", "Report", "Report for " + show_name.value + " from " + start_date.value + " to " + end_date.value, xls);
+                        email.send_email("theannihilator666@gmail.com", "Report", "Report for " + show_name.value + " from " + start_date.value + " to " + end_date.value, xls)
+                            .then(res => {
+                                const promo_titles = promos.map(item => {
+                                    return item.Video_Title;
+                                });
 
-                        const promo_titles = promos.map(item => {
-                            return item.Video_Title;
-                        });
-
-                        speechOutput = promo_titles.join(', ');
-                        this.emit(':tell', speechOutput);
+                                speechOutput = promo_titles.join(', ');
+                                this.emit(':tell', speechOutput);
+                                // speechOutput = "Check your email for the report";
+                                // this.emit(':tell', speechOutput);
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                speechOutput = "Something went wrong."
+                                this.emit(':tell', speechOutput);
+                            });
                     }
                 })
                 .catch(err => {
@@ -143,10 +163,16 @@ var handlers = {
             db.getPromosOnDate(air_date.value)
                 .then(promos => {
                     let xls = json2xls(promos);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls);
-
-                    speechOutput = "Check your email for the report";
-                    this.emit(':tell', speechOutput);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':tell', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':tell', speechOutput);
+                        });
                 })
                 .catch(err => {
                     console.log(err);
@@ -159,12 +185,10 @@ var handlers = {
             console.log("In get all titles");
             db.getAllAvailablePromoTitlesForShow(show_name.value)
                 .then(promos => {
-                    // console.log(promo_titles);
-
                     const promo_titles = promos.map(item => {
-                        return item.Video_Title;
+                        return item['PROMO_TITLE'];
                     });
-                    
+
                     let xls = json2xls(promos);
                     email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
                         .then(res => {
@@ -193,7 +217,7 @@ var handlers = {
                 .catch(err => {
                     speechOutput = "Something went wrong."
                     this.emit(':tell', speechOutput);
-                })
+                });
         } else {
             speechOutput = "Something went wrong.";
             this.emit(':tell', speechOutput);
@@ -212,10 +236,16 @@ var handlers = {
             db.getAiringsDuringShow(show_name.value)
                 .then(promos => {
                     let xls = json2xls(promos);
-                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls);
-
-                    speechOutput = "Check your email for the report";
-                    this.emit(':tell', speechOutput);
+                    email.send_email("theannihilator666@gmail.com", "Report", "Attached is the report for " + show_name.value, xls)
+                        .then(res => {
+                            speechOutput = "Check your email for the report";
+                            this.emit(':tell', speechOutput);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            speechOutput = "Something went wrong."
+                            this.emit(':tell', speechOutput);
+                        });
                 })
                 .catch(err => {
                     console.log(err);
