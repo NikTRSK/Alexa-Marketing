@@ -9,7 +9,7 @@ const db = require('./db_util');
 let email = require('./send_email');
 let json2xls = require('json2xls');
 
-const APP_ID = 'amzn1.ask.skill.6f8733a5-057c-42fd-958e-e8743d0db4d2'; // TODO replace with your app ID (OPTIONAL).
+const APP_ID = 'amzn1.ask.skill.4d1be70c-04e7-4383-9782-4cbe16a10659';
 
 const skillName = "NBC Universal's Promo Skill";
 
