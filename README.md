@@ -87,3 +87,8 @@ Here use the **ARN** of the Lambda function from step 2
 ![Screenshot](/docs/screenshots/dev-7.png?raw=true)
 
 After creating the skill make sure to update the `APP_ID` variable in `index.js`
+
+## DOCUMENTAION AND TEST QUESTIONS
+
+* `comparisson.xlsx`: Mapping to standardize the 3 databases (VCD, Syntec, NPT).
+* `Intents.xlsx`: List of intents used for the Promo Skill. Included are examples to test out the different intents. Also includes notes for each utterance.
