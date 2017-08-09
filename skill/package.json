@@ -1,0 +1,11 @@
+{
+  "name": "Marketing-Alexa",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.10",
+    "json2xls": "^0.1.2",
+    "nodemailer": "^4.0.1"
+  }
+}

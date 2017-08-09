@@ -13,7 +13,7 @@ const APP_ID = 'amzn1.ask.skill.6f8733a5-057c-42fd-958e-e8743d0db4d2'; // TODO r
 
 const skillName = "NBC Universal's Promo Skill";
 
-var handlers = {
+let handlers = {
     "DigitalPromoIntent": function() {
         let speechOutput = "";
 
@@ -268,12 +268,12 @@ var handlers = {
         }
     },
     "AboutIntent": function() {
-        var speechOutput = "The Promo Skill is a property of NBC Universal and shouldn't be redistributed";
+        let speechOutput = "The Promo Skill is a property of NBC Universal and shouldn't be redistributed";
         this.emit(':ask', speechOutput);
     },
 
     "AMAZON.HelpIntent": function() {
-        var speechOutput = "";
+        let speechOutput = "";
         speechOutput += "Here are some things you can say: ";
         speechOutput += "When did outsider run? ";
         speechOutput += "What American Ninja Warrior promos are available to run right now? ";
@@ -283,12 +283,12 @@ var handlers = {
     },
 
     "AMAZON.StopIntent": function() {
-        var speechOutput = "Goodbye";
+        let speechOutput = "Goodbye";
         this.emit(':tell', speechOutput);
     },
 
     "AMAZON.CancelIntent": function() {
-        var speechOutput = "Goodbye";
+        let speechOutput = "Goodbye";
         this.emit(':tell', speechOutput);
     },
 
@@ -297,16 +297,16 @@ var handlers = {
     },
 
     "LaunchRequest": function() {
-        var speechText = "";
+        let speechText = "";
         speechText += "Welcome to " + skillName + ".  ";
-        var repromptText = "For instructions on what you can say, please say help me.";
+        let repromptText = "For instructions on what you can say, please say help me.";
         this.emit(':ask', speechText, repromptText);
     }
 
 };
 
 exports.handler = function(event, context) {
-    var alexa = Alexa.handler(event, context);
+    let alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
     // alexa.appId = "amzn1.echo-sdk-ams.app.APP_ID";
     alexa.registerHandlers(handlers);

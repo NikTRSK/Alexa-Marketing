@@ -9,6 +9,7 @@ def upload_syntec(db, input_dir = ".\data\syntec\\"):
       with open(input_dir + file, newline='') as csv_file:
           print("Reading: " + file)
           csv_reader = csv.reader(csv_file, delimiter='\t')
+          # Get header of the document. Used for the table column names
           header = next(csv_reader)
           header = process_header(header)
           num_cols = len(header)
@@ -18,6 +19,7 @@ def upload_syntec(db, input_dir = ".\data\syntec\\"):
                   if row[i] is '':
                       row[i] = 'unknown'
                   item[header[i]] = row[i]
+              # Add in the extra fields in to the table entry
               item['VIDEO_LINK'] = 'n/a' # n/a means the source doesn't provide the data
               item['PROJECT_ID'] = 'n/a'
               item['APPROVAL_DATE'] = 'n/a'
@@ -25,9 +27,10 @@ def upload_syntec(db, input_dir = ".\data\syntec\\"):
               item['DIGITAL_AIR_DATE'] = 'n/a'
               item['DIGITAL_PLATFORM'] = 'n/a'
               item['SOURCE_DB'] = 'SYNTEC'
-            #   print(list(item.keys()))
+              # Add the item to the database
               db.add(item)
 
+# Remap the header to match the database
 def process_header(header):    
     mappings = { 'NETWORK_NAME': 'NETWORK', 'PROMO_AIR_DATE': 'AIR_DATE',
                  'SHOW_TITILE': 'SHOW_TITLE', 'PROMO_AIRED_TIME': 'AIR_TIME' }
@@ -37,29 +40,19 @@ def process_header(header):
 
     return header
 
-# key = 'PROMO_TITLE' | 'SHOW_TITLE'
+# Returns a list of all the promo titles in Syntec
+# key = 'PROMO_TITLE' | 'SHOW_TITILE'
 def get_syntec_titles(key, input_dir = ".\data\syntec\\"):
     promo_list = set()
     files = os.listdir(input_dir)
     for file in files:
       with open(input_dir + file, newline='') as csv_file:
-          print("Reading: " + file)
           csv_reader = csv.reader(csv_file, delimiter='\t')
           header = next(csv_reader)
-          # header = list(map((lambda item: item.replace(" ", "_")), header))
-          print(header)
           num_cols = len(header)
           for row in csv_reader:
               item = {}
               for i in range(0, num_cols):
-                  if row[i] is '':
-                      row[i] = 'n/a'
                   item[header[i]] = row[i]
-            #   db.add(item)
-              promo_list.add(item['PROMO_TITLE'])
-              # print(item)
+              promo_list.add(item[key])
     return promo_list
-
-# db = SyntecDB("syntec_data", "us-east-1")
-# upload_syntec(None)
-# get_syntec_titles()
