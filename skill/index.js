@@ -25,11 +25,9 @@ let handlers = {
         const length = this.event.request.intent.slots.Length;
         const air_date = this.event.request.intent.slots.AirDate;
 
-        // Handle First 3 utterances (TimeDirection)
+        // {TimeDirection} did {PromoName} run?
         if (time_direction && video_title && time_direction.value && video_title.value) {
-            console.log("In if statement");
             db.getPromo(video_title.value).then((promo) => {
-                    console.log("In get promo");
                     if (promo.length == 0) return null;
                     const air_date = promo[0]['AIR_DATE'];
                     const digital_paltform = promo[0]['DIGITAL_PLATFORM'];
@@ -55,8 +53,9 @@ let handlers = {
                         this.emit(':ask', speechOutput);
                     }
                 });
-        } else if (video_title && show_name && video_title.value && show_name.value) {
-            console.log("In is available to run");
+        }
+        // Is the {PromoName} for {ShowName} available to run now?
+        else if (video_title && show_name && video_title.value && show_name.value) {
             console.log(show_name.value + " | " + video_title.value);
             db.checkIfPromoIsAvailableToRun(show_name.value, video_title.value)
                 .then(answer => {
@@ -68,8 +67,9 @@ let handlers = {
                     speechOutput = "Something went wrong."
                     this.emit(':ask', speechOutput);
                 });
-        } else if (show_name && start_date && end_date && show_name.value && start_date.value && end_date.value) {
-            console.log("In get date range");
+        }
+        // What promos aired for {ShowName} from {StartDate} to {EndDate}?
+        else if (show_name && start_date && end_date && show_name.value && start_date.value && end_date.value) {
             db.getPromosForDateRange(show_name.value, start_date.value, end_date.value)
                 .then(msg => {
                     let xls = json2xls(msg);
@@ -89,7 +89,9 @@ let handlers = {
                     speechOutput = "Something went wrong."
                     this.emit(':ask', speechOutput);
                 });
-        } else if (time_direction && show_name && time_direction.value && show_name.value) {
+        }
+        // Give me all promo airings from last night for {ShowName}. 
+        else if (time_direction && show_name && time_direction.value && show_name.value) {
             console.log("In last night airings");
             console.log(time_direction.value + ", " + show_name.value);
             db.getPromosFromLastNight(show_name.value)
@@ -120,8 +122,9 @@ let handlers = {
                     this.emit(':ask', speechOutput);
                 });
 
-        } else if (air_date && air_date.value) {
-            console.log("In what ran on air on " + air_date.value);
+        }
+        // What ran on air on {AirDate}?
+        else if (air_date && air_date.value) {
             db.getPromosOnDate(air_date.value)
                 .then(promos => {
                     let xls = json2xls(promos);
@@ -143,7 +146,9 @@ let handlers = {
                 });
 
 
-        } else if (show_name && show_name.value) {
+        }
+        // What {ShowName} promos are available to run right now?    
+        else if (show_name && show_name.value) {
             console.log("In get all titles");
             db.getAllAvailablePromoTitlesForShow(show_name.value)
                 .then(promos => {
@@ -168,8 +173,9 @@ let handlers = {
                     speechOutput = "Something went wrong."
                     this.emit(':ask', speechOutput);
                 });
-        } else if (video_title && video_title.value) {
-            console.log("In get last aired");
+        }
+        // When was the last time {PromoName} aired?
+        else if (video_title && video_title.value) {
             db.getLastAired(video_title.value)
                 .then(air_date => {
                     console.log(air_date);
@@ -188,7 +194,7 @@ let handlers = {
     "OnAirPromoListingIntent": function() {
         let speechOutput = "";
         const show_name = this.event.request.intent.slots.ShowName;
-
+        // Give me every promo for {show_name} that ran last week.
         if (show_name && show_name.value) {
             db.getAiringsDuringShow(show_name.value)
                 .then(promos => {
@@ -219,7 +225,7 @@ let handlers = {
 
         const show_name = this.event.request.intent.slots.ShowName;
         const length = this.event.request.intent.slots.Length;
-
+        // Show me all the {Length} second promos available to run for {ShowName}.
         if (length && length.value && show_name && show_name.value) {
             console.log("In get by length");
             db.getAllPromosOfLength(show_name.value, length.value)
@@ -242,7 +248,9 @@ let handlers = {
                     speechOutput = "Something went wrong."
                     this.emit(':ask', speechOutput);
                 });
-        } else if (show_name && show_name.value) {
+        }
+        // Show me the length of promos for {show_name}.    
+        else if (show_name && show_name.value) {
             db.getLengthOfPromosForShow(show_name.value)
                 .then(promos => {
                     let xls = json2xls(promos);
@@ -308,7 +316,6 @@ let handlers = {
 exports.handler = function(event, context) {
     let alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
-    // alexa.appId = "amzn1.echo-sdk-ams.app.APP_ID";
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
